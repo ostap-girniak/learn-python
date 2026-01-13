@@ -113,3 +113,7 @@ class WebCalculatorView:
         print(f"Відкрийте браузер та перейдіть за адресою: http://{host}:{port}")
         print(f"{'='*60}\n")
         self.app.run(host=host, port=port, debug=debug)
+    
+    def get_app(self):
+        """Повертає Flask додаток для production серверів (gunicorn)"""
+        return self.app
