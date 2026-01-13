@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Базовий Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .operations {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .operation-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .operation-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .operation-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            font-size: 1.1em;
+        }
+
+        .result.hidden {
+            display: none;
+        }
+
+        .examples {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .examples h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .examples ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .examples li {
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .examples li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Калькулятор</h1>
+        <p class="subtitle">Введіть вираз для обчислення</p>
+
+        <form id="calculatorForm">
+            <div class="input-group">
+                <label for="expression">Вираз:</label>
+                <input 
+                    type="text" 
+                    id="expression" 
+                    name="expression" 
+                    placeholder="Наприклад: 10+5 або 10 * 3"
+                    autocomplete="off"
+                    autofocus
+                >
+            </div>
+
+            <div class="operations">
+                <button type="button" class="operation-btn" onclick="insertOperation('+')">+</button>
+                <button type="button" class="operation-btn" onclick="insertOperation('-')">-</button>
+                <button type="button" class="operation-btn" onclick="insertOperation('*')">×</button>
+                <button type="button" class="operation-btn" onclick="insertOperation('/')">/</button>
+                <button type="button" class="operation-btn" onclick="insertOperation('^')">^</button>
+            </div>
+
+            <button type="submit" class="btn-calculate">Обчислити</button>
+        </form>
+
+        <div class="loading" id="loading">Обчислення...</div>
+
+        <div class="result hidden" id="result"></div>
+
+        <div class="examples">
+            <h3>Приклади використання:</h3>
+            <ul>
+                <li>10 + 5 (з пробілами)</li>
+                <li>10+5 (без пробілів)</li>
+                <li>8 * 3</li>
+                <li>15 / 3</li>
+                <li>2 ^ 3 (піднесення до степеня)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('calculatorForm');
+        const expressionInput = document.getElementById('expression');
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+
+        function insertOperation(operation) {
+            const input = expressionInput;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            
+            // Вставляємо операцію в місце курсора
+            input.value = text.substring(0, start) + operation + text.substring(end);
+            input.focus();
+            input.setSelectionRange(start + 1, start + 1);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const expression = expressionInput.value.trim();
+            
+            if (!expression) {
+                showError('Введіть вираз для обчислення');
+                return;
+            }
+
+            loadingDiv.style.display = 'block';
+            resultDiv.classList.add('hidden');
+
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ expression: expression })
+                });
+
+                const data = await response.json();
+
+                loadingDiv.style.display = 'none';
+
+                if (data.success) {
+                    showSuccess(data.formatted_result);
+                } else {
+                    showError(data.error || 'Помилка обчислення');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                showError('Помилка з\'єднання з сервером');
+                console.error('Error:', error);
+            }
+        });
+
+        function showSuccess(message) {
+            resultDiv.textContent = message;
+            resultDiv.className = 'result success';
+        }
+
+        function showError(message) {
+            resultDiv.textContent = '❌ ' + message;
+            resultDiv.className = 'result error';
+        }
+
+        // Дозволяємо обчислювати по Enter
+        expressionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
