@@ -46,6 +46,11 @@ git push
   ```
 - **Start Command**: 
   ```
+  python -m gunicorn --bind 0.0.0.0:$PORT wsgi:app
+  ```
+  
+  Або якщо не працює, спробуйте:
+  ```
   gunicorn --bind 0.0.0.0:$PORT wsgi:app
   ```
 

@@ -2,6 +2,7 @@
 WSGI entry point for production servers (gunicorn)
 """
 
+import os
 from calculator import Calculator
 from web_view import WebCalculatorView
 
@@ -13,4 +14,6 @@ web_view = WebCalculatorView(calculator)
 app = web_view.get_app()
 
 if __name__ == "__main__":
-    app.run()
+    # Для локального запуску
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
